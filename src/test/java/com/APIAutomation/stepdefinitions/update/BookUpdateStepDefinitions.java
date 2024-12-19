@@ -32,4 +32,47 @@ public class BookUpdateStepDefinitions {
         this.password = password;
     }
 
+    @When("I send a PUT request to {string} with the following data:")
+    public void sendPutRequest(String endpoint, io.cucumber.datatable.DataTable dataTable) {
+        Map<String, String> inputData = dataTable.asMaps().get(0);
+
+        // Extract book ID from endpoint
+        bookId = endpoint.substring(endpoint.lastIndexOf('/') + 1);
+
+        // Create book data map
+        bookData = new HashMap<>();
+        bookData.put("id", Integer.parseInt(bookId));
+
+        if (inputData.get("title") != null && !inputData.get("title").isEmpty()) {
+            bookData.put("title", inputData.get("title"));
+        }
+        if (inputData.get("author") != null && !inputData.get("author").isEmpty()) {
+            bookData.put("author", inputData.get("author"));
+        }
+
+        if ("guest".equals(username)) {
+            response = RestAssured.given()
+                    .contentType(ContentType.JSON)
+                    .body(bookData)
+                    .when()
+                    .put(endpoint);
+        } else {
+            response = RestAssured.given()
+                    .auth()
+                    .basic(username, password)
+                    .contentType(ContentType.JSON)
+                    .body(bookData)
+                    .when()
+                    .put(endpoint);
+        }
+
+        // Debugging response
+        System.out.println("Request Body: " + bookData);
+        System.out.println("Response Body: " + response.getBody().asString());
+        System.out.println("Status Code: " + response.getStatusCode());
+    }
+
+
+
+
 }
