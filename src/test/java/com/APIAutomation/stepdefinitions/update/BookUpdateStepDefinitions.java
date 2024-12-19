@@ -26,4 +26,10 @@ public class BookUpdateStepDefinitions {
         RestAssured.baseURI = "http://localhost:7081";
         RestAssured.basePath = "";
     }
+    @Given("I am logged in as {string} with password {string} to update as {word}")
+    public void loginUser(String username, String password, String userType) {
+        this.username = username;
+        this.password = password;
+    }
+
 }
